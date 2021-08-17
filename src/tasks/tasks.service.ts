@@ -7,6 +7,8 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { GetFilteredTasksDto } from './dto/get-filtered-tasks.dto';
 import { Task } from './task.entity';
 import { ETaskStatus } from './enums/task-status.enum';
+import { User } from '../auth/auth.entity';
+import { GetUser } from '../auth/get-user.decorator';
 
 @Injectable()
 export class TasksService {
@@ -15,12 +17,17 @@ export class TasksService {
     private taskRepository: TaskRepository,
   ) {}
 
-  getTasks(getFilteredTasksDto: GetFilteredTasksDto): Promise<Task[]> {
-    return this.taskRepository.getTasks(getFilteredTasksDto);
+  getTasks(
+    getFilteredTasksDto: GetFilteredTasksDto,
+    user: User,
+  ): Promise<Task[]> {
+    return this.taskRepository.getTasks(getFilteredTasksDto, user);
   }
 
-  async getTaskById(id: number): Promise<Task> {
-    const task = await this.taskRepository.findOne(id);
+  async getTaskById(id: number, @GetUser() user: User): Promise<Task> {
+    const task = await this.taskRepository.findOne({
+      where: { id, userId: user.id },
+    });
 
     if (!task) {
       throw new NotFoundException(`Task with id: ${id} not found`);
@@ -29,12 +36,16 @@ export class TasksService {
     return task;
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    return await this.taskRepository.createTask(createTaskDto);
+  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+    return await this.taskRepository.createTask(createTaskDto, user);
   }
 
-  async updateTaskStatus(id: number, status: ETaskStatus): Promise<Task> {
-    const task = await this.getTaskById(id);
+  async updateTaskStatus(
+    id: number,
+    status: ETaskStatus,
+    user: User,
+  ): Promise<Task> {
+    const task = await this.getTaskById(id, user);
 
     task.status = status;
     await task.save();
@@ -42,8 +53,8 @@ export class TasksService {
     return task;
   }
 
-  async deleteTaskById(id: number): Promise<string> {
-    const deleted = await this.taskRepository.delete(id);
+  async deleteTaskById(id: number, user: User): Promise<string> {
+    const deleted = await this.taskRepository.delete({ id, userId: user.id });
 
     if (!deleted.affected) {
       throw new NotFoundException(`Task with id: ${id} not found`);

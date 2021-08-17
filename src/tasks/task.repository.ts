@@ -4,13 +4,19 @@ import { Task } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { ETaskStatus } from './enums/task-status.enum';
 import { GetFilteredTasksDto } from './dto/get-filtered-tasks.dto';
+import { User } from '../auth/auth.entity';
 
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
-  async getTasks(getFilteredTasksDto: GetFilteredTasksDto): Promise<Task[]> {
+  async getTasks(
+    getFilteredTasksDto: GetFilteredTasksDto,
+    user: User,
+  ): Promise<Task[]> {
     const { status, search } = getFilteredTasksDto;
 
     const query = this.createQueryBuilder('task');
+
+    query.where('task.userId = :id', { id: user.id });
 
     if (status) {
       query.andWhere('task.status = :status', { status });
@@ -26,7 +32,7 @@ export class TaskRepository extends Repository<Task> {
     return await query.getMany();
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
     const { title, description } = createTaskDto;
 
     const task = new Task();
@@ -34,8 +40,11 @@ export class TaskRepository extends Repository<Task> {
     task.description = description;
     task.title = title;
     task.status = ETaskStatus.OPEN;
+    task.user = user;
 
     await task.save();
+
+    delete task.user;
 
     return task;
   }
