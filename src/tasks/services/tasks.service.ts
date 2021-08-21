@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { TaskRepository } from './task.repository';
+import { User } from 'auth/entity/auth.entity';
+import { GetUser } from 'auth/decorators/get-user.decorator';
 
-import { CreateTaskDto } from './dto/create-task.dto';
-import { GetFilteredTasksDto } from './dto/get-filtered-tasks.dto';
-import { Task } from './task.entity';
-import { ETaskStatus } from './enums/task-status.enum';
-import { User } from '../auth/auth.entity';
-import { GetUser } from '../auth/get-user.decorator';
+import { TaskRepository } from '../repositories/task.repository';
+import { CreateTaskDto } from '../dto/create-task.dto';
+import { GetFilteredTasksDto } from '../dto/get-filtered-tasks.dto';
+import { Task } from '../entities/task.entity';
+import { ETaskStatus } from '../enums/task-status.enum';
 
 @Injectable()
 export class TasksService {

@@ -14,14 +14,15 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { TasksService } from './tasks.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { GetFilteredTasksDto } from './dto/get-filtered-tasks.dto';
-import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
-import { Task } from './task.entity';
-import { ETaskStatus } from './enums/task-status.enum';
-import { GetUser } from '../auth/get-user.decorator';
-import { User } from '../auth/auth.entity';
+import { GetUser } from 'auth/decorators/get-user.decorator';
+import { User } from 'auth/entity/auth.entity';
+
+import { TasksService } from '../services/tasks.service';
+import { CreateTaskDto } from '../dto/create-task.dto';
+import { GetFilteredTasksDto } from '../dto/get-filtered-tasks.dto';
+import { TaskStatusValidationPipe } from '../pipes/task-status-validation.pipe';
+import { Task } from '../entities/task.entity';
+import { ETaskStatus } from '../enums/task-status.enum';
 
 @Controller('tasks')
 @UseGuards(AuthGuard())

@@ -6,8 +6,9 @@ import {
   ManyToOne,
 } from 'typeorm';
 
-import { ETaskStatus } from './enums/task-status.enum';
-import { User } from '../auth/auth.entity';
+import { User } from 'auth/entity/auth.entity';
+
+import { ETaskStatus } from '../enums/task-status.enum';
 
 @Entity()
 export class Task extends BaseEntity {

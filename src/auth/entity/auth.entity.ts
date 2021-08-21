@@ -8,7 +8,9 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-import { Task } from '../tasks/task.entity';
+import { Task } from 'tasks/entities/task.entity';
+
+import { ERoles } from '../enums/roles.enum';
 
 @Entity()
 @Unique(['username'])
@@ -24,6 +26,13 @@ export class User extends BaseEntity {
 
   @Column()
   salt: string;
+
+  @Column({
+    type: 'enum',
+    enum: ERoles,
+    default: ERoles.USER,
+  })
+  role: ERoles;
 
   @OneToMany((type) => Task, (task) => task.user, { eager: true })
   tasks: Task[];
